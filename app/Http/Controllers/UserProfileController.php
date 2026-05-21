@@ -71,7 +71,6 @@ class UserProfileController extends Controller
 
     public function destroy(Request $request)
     {
-        dd("delete user account");
         if (Auth::guest()) {
             return redirect('/login');
         }
@@ -79,6 +78,10 @@ class UserProfileController extends Controller
             return redirect('/')->with('error', 'You are not authorized to delete this user.');
         }
 
+        // Validate request
+        $request->validate([
+            'password' => ['required', 'current_password'],
+        ]);
 
         // Delete user
         $user = Auth::user();
