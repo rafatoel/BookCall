@@ -1,1 +1,17 @@
-Nothing needs to be added to the .gitignore file based on the provided file changes, as they only include source code files (.php) and no build artifacts, dependencies, or temporary files.
+```php
+/vendor/
+/node_modules/
+/public/storage
+/bootstrap/cache/
+/storage/logs/
+*.log
+.env
+.env.local
+.env.*
+.DS_Store
+Thumbs.db
+.phpunit.result.cache
+.svn/
+.git/
+!vendor/composer/installed.json
+```

@@ -27,8 +27,12 @@
                 <!-- nav links  -->
                 <ul class="flex flex-col gap-3">
                     <li class="p-2 text-center font-semibold rounded-md 
-    {{ request()->is('bookings') ? 'bg-white text-black' : 'bg-zinc-700/50 text-white' }}">
+    {{ request()->is('bookings') || request()->is('bookings/*') ? 'bg-white text-black' : 'bg-zinc-700/50 text-white' }}">
                         <a href="/bookings" class="block">Bookings</a>
+                    </li>
+                    <li class="p-2 text-center font-semibold rounded-md 
+    {{ request()->is('meetings') ? 'bg-white text-black' : 'bg-zinc-700/50 text-white' }}">
+                        <a href="/meetings" class="block">Meetings</a>
                     </li>
                     <li class="p-2 text-center font-semibold rounded-md 
     {{ request()->is('profile') ? 'bg-white text-black' : 'bg-zinc-700/50 text-white' }}">

@@ -28,17 +28,25 @@
     document.addEventListener('DOMContentLoaded', function() {
         const triggerButton = document.getElementById('trigger-btn-{{ $id }}');
         const confirmationPopup = document.getElementById('confirmation-popup-{{ $id }}');
-        const cancelButton = confirmationPopup.querySelector('#cancel-btn-{{ $id }}');
-
-        if (triggerButton && confirmationPopup && cancelButton) {
+        
+        if (triggerButton && confirmationPopup) {
             triggerButton.addEventListener('click', () => {
-                console.log("Hello open me")
                 confirmationPopup.classList.remove('hidden');
             });
 
-            cancelButton.addEventListener('click', () => {
-                console.log("Hello close me")
-                confirmationPopup.classList.add('hidden');
+            // Close popup when clicking cancel button (using class selector for multiple instances)
+            const cancelButtons = confirmationPopup.querySelectorAll('.cancel-btn');
+            cancelButtons.forEach(cancelBtn => {
+                cancelBtn.addEventListener('click', () => {
+                    confirmationPopup.classList.add('hidden');
+                });
+            });
+
+            // Close popup when clicking outside the modal
+            confirmationPopup.addEventListener('click', (e) => {
+                if (e.target === confirmationPopup) {
+                    confirmationPopup.classList.add('hidden');
+                }
             });
         }
     });

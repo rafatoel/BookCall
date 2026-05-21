@@ -105,4 +105,34 @@ class UserBookingController extends Controller
 
         return redirect()->back()->with('success', 'Booking canceled successfully.');
     }
+
+    // List all meetings (upcoming and past)
+    public function meetings()
+    {
+        $upcomingBookings = Booking::query()
+            ->where('user_id', Auth::id())
+            ->where('canceled', false)
+            ->whereDate('date', '>=', now()->toDateString())
+            ->orderBy('date')
+            ->orderBy('start_time')
+            ->get();
+
+        $pastBookings = Booking::query()
+            ->where('user_id', Auth::id())
+            ->where(function ($query) {
+                $query->where('complete', true)
+                    ->orWhere('canceled', true)
+                    ->orWhere('date', '<', now()->toDateString());
+            })
+            ->whereDate('date', '<', now()->toDateString())
+            ->orderByDesc('date')
+            ->orderByDesc('start_time')
+            ->get()
+            ->map(function ($booking) {
+                $booking->missed = $booking->date < now() && !$booking->complete && !$booking->canceled;
+                return $booking;
+            });
+
+        return view('meetings.index', compact('upcomingBookings', 'pastBookings'));
+    }
 }
