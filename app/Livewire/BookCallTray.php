@@ -29,7 +29,7 @@ class BookCallTray extends Component
             'formData.description' => ['nullable', 'string', 'max:1000'],
             'formData.duration' => ['required', 'integer', 'min:1'],
             'formData.date' => ['required', 'date', 'after_or_equal:today'],
-            'formData.time' => ['required', 'string'],
+            'formData.time' => ['required', 'string', 'regex:/^\d{2}:\d{2}:\d{2} - \d{2}:\d{2}:\d{2}$/'],
         ]);
 
         // Split the time into start and end times
@@ -41,18 +41,23 @@ class BookCallTray extends Component
         
         [$startTime, $endTime] = $timeParts;
 
-        // Check for double booking
+        // Validate time format before using
+        if (!preg_match('/^\d{2}:\d{2}:\d{2}$/', $startTime) || !preg_match('/^\d{2}:\d{2}:\d{2}$/', $endTime)) {
+            $this->addError('formData.time', 'Invalid time format');
+            return;
+        }
+
+        // Check for double booking with proper overlap detection
         $existingBooking = Booking::where('user_id', session('user_id'))
             ->where('date', $this->formData['date'])
-            ->where(function ($query) use ($startTime, $endTime) {
-                $query->whereBetween('start_time', [$startTime, $endTime])
-                    ->orWhereBetween('end_time', [$startTime, $endTime])
-                    ->orWhere(function ($q) use ($startTime, $endTime) {
-                        $q->where('start_time', '<=', $startTime)
-                            ->where('end_time', '>=', $endTime);
-                    });
-            })
             ->where('canceled', false)
+            ->where(function ($query) use ($startTime, $endTime) {
+                $query->where(function ($q) use ($startTime, $endTime) {
+                    // Existing booking starts before new booking ends AND ends after new booking starts
+                    $q->where('start_time', '<', $endTime)
+                      ->where('end_time', '>', $startTime);
+                });
+            })
             ->first();
 
         if ($existingBooking) {
