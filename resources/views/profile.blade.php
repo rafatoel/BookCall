@@ -79,4 +79,22 @@
             </div>
         </div>
     </form>
+
+    <!-- Delete Account Section -->
+    <div class="p-2 mt-6 border border-red-700/80 rounded-md">
+        <h2 class="text-xl font-bold text-red-600 dark:text-red-400 mb-4">Delete Account</h2>
+        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Once you delete your account, there is no going back. Please be certain.</p>
+        <form method="POST" action="/profile" class="flex items-end gap-4">
+            @csrf
+            @method('DELETE')
+            <div class="flex-1">
+                <x-form-label>Password Confirmation</x-form-label>
+                <x-form-input type="password" name="password" required placeholder="Enter your password"></x-form-input>
+                <x-form-error name="password"></x-form-error>
+            </div>
+            <button type="submit" class="rounded-md bg-red-600 px-4 py-2 font-semibold text-white text-sm shadow-sm hover:bg-red-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
+                Delete Account
+            </button>
+        </form>
+    </div>
 </x-user-layout>

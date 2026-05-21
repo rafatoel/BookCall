@@ -14,7 +14,6 @@ class CallMetaData extends Component
     public function onChange($propertyName, $value)
     {
         $this->dispatch('inputChange', $propertyName, $value);
-        // dd($propertyName, $this->$propertyName);
     }
 
     public function mount()

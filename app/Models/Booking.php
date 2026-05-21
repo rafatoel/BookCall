@@ -8,7 +8,6 @@ use Illuminate\Notifications\Notifiable;
 
 class Booking extends Model
 {
-    //
     use HasFactory, Notifiable;
 
     protected $fillable = [
@@ -25,7 +24,6 @@ class Booking extends Model
         'confirmed',
         'complete',
         'canceled',
-        // TODO: User ID
     ];
 
     public function user()

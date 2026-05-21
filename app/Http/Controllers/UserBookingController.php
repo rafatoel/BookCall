@@ -59,6 +59,11 @@ class UserBookingController extends Controller
     // Update a booking status to "complete"
     public function complete(Booking $booking)
     {
+        // Authorization check
+        if ($booking->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $booking->update(['complete' => true]);
 
         return redirect()->back()->with('success', 'Booking marked as completed.');
@@ -67,8 +72,13 @@ class UserBookingController extends Controller
     // Update a booking status to "confirmed" and add a meeting link
     public function confirm(Booking $booking, Request $request)
     {
+        // Authorization check
+        if ($booking->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $request->validate([
-            'meeting_link' => 'required|string',
+            'meeting_link' => 'required|string|url',
         ]);
 
         $booking->update([
@@ -86,8 +96,43 @@ class UserBookingController extends Controller
     // Update a booking status to "canceled"
     public function cancel(Booking $booking)
     {
+        // Authorization check
+        if ($booking->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $booking->update(['canceled' => true]);
 
         return redirect()->back()->with('success', 'Booking canceled successfully.');
+    }
+
+    // List all meetings (upcoming and past)
+    public function meetings()
+    {
+        $upcomingBookings = Booking::query()
+            ->where('user_id', Auth::id())
+            ->where('canceled', false)
+            ->whereDate('date', '>=', now()->toDateString())
+            ->orderBy('date')
+            ->orderBy('start_time')
+            ->get();
+
+        $pastBookings = Booking::query()
+            ->where('user_id', Auth::id())
+            ->where(function ($query) {
+                $query->where('complete', true)
+                    ->orWhere('canceled', true)
+                    ->orWhere('date', '<', now()->toDateString());
+            })
+            ->whereDate('date', '<', now()->toDateString())
+            ->orderByDesc('date')
+            ->orderByDesc('start_time')
+            ->get()
+            ->map(function ($booking) {
+                $booking->missed = $booking->date < now() && !$booking->complete && !$booking->canceled;
+                return $booking;
+            });
+
+        return view('meetings.index', compact('upcomingBookings', 'pastBookings'));
     }
 }

@@ -59,6 +59,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('/bookings/{booking}/complete', [UserBookingController::class, 'complete'])->name('bookings.complete');
     Route::patch('/bookings/{booking}/confirm', [UserBookingController::class, 'confirm'])->name('bookings.confirm');
     Route::patch('/bookings/{booking}/cancel', [UserBookingController::class, 'cancel'])->name('bookings.cancel');
+
+    // Meeting routes
+    Route::get('/meetings', [UserBookingController::class, 'meetings'])->name('meetings.index');
 });
 
 

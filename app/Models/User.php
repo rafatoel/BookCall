@@ -31,6 +31,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'durations' => 'array',
+        'password' => 'hashed',
     ];
 
     public function availabilities()
@@ -41,13 +42,5 @@ class User extends Authenticatable
     public function bookings()
     {
         return $this->hasMany(Booking::class);
-    }
-
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
     }
 }
